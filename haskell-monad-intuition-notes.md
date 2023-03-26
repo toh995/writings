@@ -83,3 +83,27 @@ instance Applicative Maybe where
   Just f  <*> m = f <$> m
   Nothing <*> _ = Nothing
 ```
+
+## Deriving `Applicative` and `Functor` from `Monad`
+Note that, we can define `Applicative` and `Functor` completely in terms of `>>=` and `pure`/`return`:
+```haskell
+-- Applicative
+mf <*> ma =
+  mf >>= \f ->
+    ma >>= \a ->
+      pure $ f a
+
+-- Functor
+f <$> m = m >>= pure . f
+```
+
+This can be useful in that, the bookkeeping details can be encapsulated in only two functions: `>>=` and `pure`. All other `Applicative` and `Functor`
+operations will then be auto-derived.
+
+## Deriving `Functor` from `Applicative`
+We can also define `Functor` completely in terms of `pure` and `<*>`:
+```haskell
+f <$> m = pure f <*> m
+```
+
+Again, a similar idea applies here - define the bookkeeping details only in `pure` and `<*>`, then we get the `Functor` definitions for free.
