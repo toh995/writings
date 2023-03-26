@@ -43,3 +43,43 @@ In this paradigm:
 - (Applicative) `pure` create a new instruction-set, which, when executed, will return the provided value
 - (Applicative) `<*>` combine two instruction-sets into a new one. The new instruction-set will execute the first instruction-set, then execute the second one.  The final result of the new instruction-set, will be the ouptut of the first instruction-set (which is a function), applied to the output of the second instruction-set.
 - (Monad) `>>=` create a new instruction-set, which will execute the first instruction-set, then thread its results to the provided function, which will produce a second instruction-set. After this, execute this second instruction-set. The output of this second instruction-set is the final output.
+
+## Why are monads useful?
+
+### Clear separation between pure and impure code
+Self-explanatory. An obvious example is the `IO` monad. We can write pure code to operate on the results of an `IO` action.
+
+### Abstract away tedious bookkeeping
+Fundamentally, monads (and functors/applicative functors) allow us to abstract away tedious bookkeeping that we normally have to do.
+
+The idea is that we write all of the tedious bookkeeping exactly ONCE, inside of the instance declarations for `Monad`/`Applicative`/`Functor`.
+Once we've done that, we no longer have to think about bookkeeping in normal everyday code - instead, we can just use the simpler built-in functions like
+`<$>`, `<*>`, `>>=`, `pure`, etc, and we can be confident that the bookkeeping will be taken care of for us.
+
+Examples where this is useful: `Maybe`, `State`, `Parser`, etc.
+
+#### Example: `Maybe`
+Consider the following function that deals with `Maybe` values:
+```haskell
+sumMaybes :: Maybe Int -> Maybe Int -> Maybe Int
+sumMaybes Nothing   _       = Nothing
+sumMaybes _         Nothing = Nothing
+sumMaybes (Just n) (Just m) = Just (n + m)
+```
+
+Here, the extra "bookkeeping" is the pattern matching on `Nothing` and `Just`.
+
+We can rewrite this, abstracting away the bookkeeping, using an `Applicative`:
+```haskell
+sumMaybes :: Maybe Int -> Maybe Int -> Maybe Int
+sumMaybes = liftA2 (+)
+```
+
+The bookkeeping code is housed in the `Applicative` instance declaration:
+```haskell
+instance Applicative Maybe where
+  pure = Just
+
+  Just f  <*> m = f <$> m
+  Nothing <*> _ = Nothing
+```
