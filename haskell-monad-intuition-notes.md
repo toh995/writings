@@ -1,14 +1,24 @@
 # Haskell Monad Intuition Notes
 
-Here are my various intuitions about monads in haskell so far (subject to change over time)
+Here are my various intuitions about monads in haskell so far (subject to change/evolve over time).
 
-## Monad as a container of values
+This document is a personal exercise to organize my current thinking around monads.
+This is NOT a definitive monad tutorial - I'd like to avoid the 
+[monad tutorial fallacy](https://byorgey.wordpress.com/2009/01/12/abstraction-intuition-and-the-monad-tutorial-fallacy/).
+
+## What IS a monad?
+So far, I have the following intuitions for monads:
+- Monad as a container of values
+- Monad as a context for a value
+- Monad as an instruction-set
+
+### Monad as a container of values
 Concrete examples: lists, sets, trees, graphs, etc.
 
 - In this category, we might have traditional "container" data structures
 - `Functor`, `Applicative`, and `Monad` give us various tools for applying functions to manipulate the contents of the container
 
-## Monad as a context for a value
+### Monad as a context for a value
 Concrete examples: `IO`, `Maybe`
 
 - The idea is that, we can wrap a "pure" value inside of an "impure" context (i.e. `IO`)
@@ -20,8 +30,8 @@ In this paradigm:
 - (Applicative) `<*>` after injecting a pure function into the context, apply that function to other "context wrappers"
 - (Monad) `>>=` take the pure value inside of the context, and produce another monad
 
-## Monad as an instruction-set
-Concrete examples: `State`, `Parser`, `IO`
+### Monad as an instruction-set
+Concrete examples: `State`, `Parser`, `(-> r)`, `IO`
 
 - In this paradigm, the monad represents a set of instructions to execute later.
 - The definition of monad does NOT necessitate a mechanism to EXECUTE the instruction-set. This is usually defined OUTSIDE of the monad (e.g. for `State`, we have `runState`, which is a custom function unique to `State`).
