@@ -19,10 +19,16 @@ Concrete examples: lists, sets, trees, graphs, etc.
 - `Functor`, `Applicative`, and `Monad` give us various tools for applying functions to manipulate the contents of the container
 
 ### Monad as a context for a value
-Concrete examples: `IO`, `Maybe`
+Concrete examples: `IO`, `Maybe`, `Either`
 
-- The idea is that, we can wrap a "pure" value inside of an "impure" context (i.e. `IO`)
-- Monads give us a clear separation between "pure" and "impure" code.
+- Here, a monad represents a special context/environment that a value can live in. For example:
+  - `IO` represents an environment where side-effecting IO operations are allowed.
+  - `Maybe` and `Either` represent environments where failure is possible.
+- Oftentimes, when you are _inside_ of a monad, you suddenly get access to special programming language features, that you normally lack access to in
+the pure world. (i.e. side effects, error handling/failure)
+- The distinction between the types `m a` and `a`, reflects the fact that the usage of the programming language feature is a property of the monad itself,
+and not the value inside the monad.
+- When a monad represents side-effecting code, it can help provide a clear separation between "pure" and "impure" code.
 
 In this paradigm:
 - (Functor) `<$>` apply a pure function to the value inside the context
