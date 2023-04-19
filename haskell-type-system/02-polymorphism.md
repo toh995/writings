@@ -65,8 +65,10 @@ Mathematically speaking, we are defining a new set of type constructors, and we'
 roughly equivalent to:
 
 $$
-Functor := \{ f \mid f \in (* \rightarrow *) \text{ and } P(f) \}
-\\
+Functor := \lbrace f \mid f \in (* \rightarrow *) \text{ and } P(f) \rbrace
+$$
+
+$$
 where \space P(f) = f \text{ has some function definition for } fmap
 $$
 
@@ -130,9 +132,12 @@ Here, we have two type constructors: `a` and `t`.
 Observe that `a` has kind `*`, and `t` has kind `* -> *`.
 
 In the absence of any constraints, we expect the `sum` function to be valid for any type constructors `a` and `t`, such that
+
 $$
 a \in (*)
-\\
+$$
+
+$$
 t \in (* \rightarrow *)
 $$
 
@@ -142,9 +147,12 @@ sum :: (Num a, Foldable t) => t a -> a
 ```
 
 Now, the `sum` function will only be valid for the type constructors `a` and `t`, such that
+
 $$
 a \in Num \subset (*)
-\\
+$$
+
+$$
 t \in Foldable \subset (* \rightarrow *)
 $$
 
@@ -154,11 +162,16 @@ foo :: (Num a, Show a, Show b) => a -> a -> b -> String
 ```
 
 Here, `foo` is valid for all type constructors `a` and `b`, such that
+
 $$
 a \in Num \subset (*)
-\\
+$$
+
+$$
 a \in Show \subset (*)
-\\
+$$
+
+$$
 b \in Show \subset (*)
 $$
 
@@ -182,9 +195,12 @@ class Applicative f where
 ```
 
 This essentially means:
+
 $$
-Applicative := \{ f \mid f \in (* \rightarrow *) \text{ and } P(f) \}
-\\
+Applicative := \lbrace f \mid f \in (* \rightarrow *) \text{ and } P(f) \rbrace
+$$
+
+$$
 where \space P(f) = f \text{ has some function definition for both } pure \text{ and <*>}
 $$
 
@@ -198,8 +214,10 @@ class (Functor f) => Applicative f where
 The constraint changes the the definition to:
 
 $$
-Applicative := \{ f \mid f \in Functor \subset (* \rightarrow *) \text{ and } P(f) \}
-\\
+Applicative := \lbrace f \mid f \in Functor \subset (* \rightarrow *) \text{ and } P(f) \rbrace
+$$
+
+$$
 where \space P(f) = f \text{ has some function definition for both } pure \text{ and <*>}
 $$
 
