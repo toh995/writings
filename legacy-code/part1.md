@@ -1,10 +1,5 @@
-# Notes for "Working Effectively With Legacy Code" by Michael C. Feathers
-Book link: https://github.com/mohandutt134/software-development-ebooks/blob/master/%5BWorking%20Effectively%20with%20Legacy%20Code%20(Robert%20C.%20Martin%20Series)%20Kindle%20Edition%20by%20Michael%20Feathers%20-%202005%5D.pdf
-
-All quotes/images are attributed to Michael C. Feathers
-
-## Part 1 - The Mechanics of Change
-### Chapter 1 - Changing Software
+# Part 1 - The Mechanics of Change
+## Chapter 1 - Changing Software
 > For simplicity’s sake, let’s look at four primary reasons to change software.
 > 1. Adding a feature
 > 2. Fixing a bug
@@ -21,7 +16,7 @@ Any sort of change risks a change in behavior.
 
 One way to mitigate this risk is, to write tests first, to verify existing behavior. This helps us ensure that existing behavior stays intact.
 
-### Chapter 2 - Working with Feedback
+## Chapter 2 - Working with Feedback
 Unit tests are critical to give us fast feedback while writing code. i.e. we can make a code change, then immediately run unit tests, to see if we broke anything.
 
 > Here are qualities of good unit tests:
@@ -37,7 +32,7 @@ Unit tests are critical to give us fast feedback while writing code. i.e. we can
 > 4. Write tests.
 > 5. Make changes and refactor.
 
-### Chapter 3 - Sensing and Separation
+## Chapter 3 - Sensing and Separation
 Suppose you are testing an impure module. 
 
 There are two potential testing pain points here:
@@ -48,7 +43,7 @@ There are two potential testing pain points here:
 
 One major technique to tackle "Sensing"
 
-#### Faking Collaborators
+### Faking Collaborators
 The main idea here is to:
 1. Identify which part of the code is triggering side effects
 2. Extract this "side effecting" code into its own module
@@ -56,7 +51,7 @@ The main idea here is to:
     - It also allows us to "mock out" the side effects
         - i.e. in a unit test, we don't trigger any side effects, but can still assert that the correct API was invoked, to trigger the side effects
 
-##### Example:
+#### Example:
 Suppose we have a point-of-sale system as follows:
 ```typescript
 class Sale {
@@ -101,7 +96,7 @@ class FakeDisplay implements Display {
 }
 ```
 
-### Chapter 4 - The Seam Model
+## Chapter 4 - The Seam Model
 In Chapter 3, we discussed extracting out side-effecting code so that it's easier to mock.
 
 But what if it's impractical to refactor like this?
@@ -114,7 +109,7 @@ This is where **seams** can be useful.
 
 > Every seam has an **enabling point**, a place where you can make the decision to use one behavior or another.
 
-#### Example:
+### Example:
 ```typescript
 interface Cell {
     recalculate(): void;
