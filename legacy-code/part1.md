@@ -109,6 +109,8 @@ This is where **seams** can be useful.
 
 > Every seam has an **enabling point**, a place where you can make the decision to use one behavior or another.
 
+The idea is to look in the code for **existing** seams, and leverage those.
+
 ### Example:
 ```typescript
 interface Cell {
@@ -131,3 +133,10 @@ buildSpreadsheet() {
     cell.recalculate();
 }
 ```
+
+## Chapter 5 - Tools
+> refactoring (n.). A change made to the internal structure of software to make it easier to understand and cheaper to modify without changing its existing behavior.
+
+- Automated refactoring tools can be helpful
+- When using a new refactoring tool, do small sanity checks to ensure the tool actually works - i.e. it should keep existing behavior constant
+- Also good to add automated tests for existing behavior
