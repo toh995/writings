@@ -139,3 +139,45 @@ class LoggingEmployee extends Employee {
 }
 ```
 
+## Chapter 7 - It Takes Forever to Make a Change
+Why does it take so long to make a change?
+
+### Understanding
+In large codebases, it takes a while to gain context, and understand the current system.
+
+Some of this is unavoidable - the larger the codebase, the more context there is to gain.
+
+> In a well-maintained system, it might take a while to figure out how to make a change, but once you do, the change is usually easy and you feel much more comfortable with the system. In a legacy system, it can take a long time to figure out what to do, and the change is difficult also.
+
+SOLUTION:
+> Systems that are broken up into small, well-named, understandable pieces enable faster work.
+
+### Lag Time
+> Lag time is the amount of time that passes between a change that you make and the moment that you get real feedback about the change.
+
+One reason for large lag time - modules are all tightly coupled - i.e. the entire app MUST be compiled all together.
+
+Ideally, we should be able to compile a single module in isolation. This allows rebuilds/tests to run much faster.
+
+#### Breaking Dependencies
+In this strategy, we establish abstract interfaces for our modules.
+
+Then, we can implement "fake" modules inside of a test environment. This has the following advantages:
+- Speeds up compile times for tests
+- Makes code easier to change - we can swap out/edit the concrete implementations of these interfaces, as needed
+
+##### Example
+Suppose we have a software architecture like this:
+
+![](./assets/figure-7.1.png)
+
+The constructor for `AddOpportunityFormHandler` accepts two arguments: `ConsultantSchedulerDB` and `OpportunityItem`.
+
+We can extract out an abstract interface for the two arguments:
+![](./assets/figure-7.3.png)
+
+We can further extract these out into packages:
+![](./assets/figure-7.4.png)
+
+> [!NOTE]
+> This strategy increases *overall* compilation time, but decreases *local* compilation time.
