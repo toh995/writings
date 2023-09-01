@@ -181,3 +181,104 @@ We can further extract these out into packages:
 
 > [!NOTE]
 > This strategy increases *overall* compilation time, but decreases *local* compilation time.
+
+## Chapter 8 - How Do I Add a Feature?
+> In legacy code, one of the most important considerations is that we don’t have tests around much of our code. Worse, getting them in place can be difficult.
+
+We are tempted to use the techniques in chapter 6 (I Don’t Have Much Time and I Have to Change It). For example, sprout and wrap techniques.
+
+However, these don't add test coverage for existing legacy code.
+
+It is better to add tests wherever possible.
+
+We can use TDD:
+> 0. Get the class you want to change under test.
+> 1. Write a failing test case.
+> 2. Get it to compile.
+> 3. Make it pass. (Try not to change existing code as you do this.) 4. Remove duplication.
+> 5. Repeat.
+
+TDD is useful to help us incrementally improve the code design, while ensuring the features continue to work properly.
+
+**The Liskov Substitution Principle (LSP)**
+> The LSP implies that clients of a class should be able to use objects of a subclass without having to know that they are objects of a subclass.
+
+How to avoid LSP violations:
+> 1. Whenever possible, avoid overriding concrete methods.
+> 2. If you do, see if you can call the method you are overriding in the overriding method.
+
+## Chapter 9 - I Can't Get This Class into a Test Harness
+> Here are the four most common problems we encounter:
+> 1. Objects of the class can’t be created easily.
+> 2. The test harness won’t easily build with the class in it.
+> 3. The constructor we need to use has bad side effects.
+> 4. Significant work happens in the constructor, and we need to sense it.
+
+### The Case of the Irritating Parameter
+Try constructing an object for a test, but the constructor has dependencies that are annoying to set up, or triggers unwanted side effects, or is just slow.
+
+This is called an **irritating parameter**.
+
+Ideas:
+- Mock/fake the irritating parameter
+- Pass in `null` for the parameter
+- Subclass the irritating parameter, then override/remove the annoying code
+
+### The Case of the Hidden Dependency
+Inside a constructor for an object, we construct another object and save it as a dependency.
+
+It can be tough to mock/fake this dependency.
+
+We can refactor, such that the dependency becomes a constructor argument! (Parameterize Constructor)
+
+### The Case of the Construction Blob
+Similar to hidden dependency, except the dependency is used as a dependency for other objects.
+
+We can use "Supersede Instance Variable", i.e. something like:
+
+> We write a setter on the class that allows us to swap in another instance after we construct the object.
+```
+class WatercolorPane {
+    public:
+    WatercolorPane(Form *border, WashBrush *brush, Pattern *backdrop) {
+        ...
+        anteriorPanel = new Panel(border);
+        anteriorPanel->setBorderColor(brush->getForeColor());
+        backgroundPanel = new Panel(border, backdrop);
+        cursor = new FocusWidget(brush, backgroundPanel);
+        ... 
+    }
+    void supersedeCursor(FocusWidget *newCursor) {
+        delete cursor;
+        cursor = newCursor;
+    }
+}
+```
+
+### The Case of the Irritating Global Dependency
+Many times, the global state is a singleton object
+- Add a way to mock/fake the singleton
+- Move the global dependency to be a parameter of the constructor
+
+### The Case of the Onion Parameter
+> ...we end up having to create objects to create objects to create objects to create a parameter for a constructor of the class that we want to test. Objects inside of other objects—it seems like a big onion. 
+- Pass in `null` for the parameter
+- Mock/fake the parameter
+
+### The Case of the Aliased Parameter
+Subclass and override
+
+## Chapter 10 - I Can’t Run This Method in a Test Harness
+> Here are some of the problems that we can run into.
+> - The method might not be accessible to the test. It could be private or have some other accessibility problem.
+> - It might be hard to call the method because it is hard to construct the parameters we need to call it.
+> - The method might have bad side effects (modifying a database, launching a cruise missile, and so on), so it is impossible to run in a test harness.
+> - We might need to sense through some object that the method uses.
+
+### The Case of the Hidden Method
+If a method is private
+- Try to test that method via an existing public method (BEST)
+- Make the private method public
+    - Potentially extract the method into a separate utility module
+    - The original module can hold a private reference to this new module
+- Make the private method protected, then subclass inside of a test, and invoke the protected method
