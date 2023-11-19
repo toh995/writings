@@ -24,8 +24,7 @@ Concrete examples: `IO`, `Maybe`, `Either`
 - Here, a monad represents a special context/environment that a value can live in. For example:
   - `IO` represents an environment where side-effecting IO operations are allowed.
   - `Maybe` and `Either` represent environments where failure is possible.
-- Oftentimes, when you are _inside_ of a monad, you suddenly get access to special programming language features, that you normally lack access to in
-the pure world. (i.e. side effects, error handling/failure)
+- Oftentimes, when you are _inside_ of a monad, you suddenly get access to special programming language features, that you normally lack access to in the pure world. (i.e. side effects, error handling/failure)
 - The distinction between the types `m a` and `a`, reflects the fact that the usage of the programming language feature is a property of the monad itself,
 and not the value inside the monad.
 - When a monad represents side-effecting code, it can help provide a clear separation between "pure" and "impure" code.
@@ -52,15 +51,13 @@ In this paradigm:
 
 ## Why are monads useful?
 
-Monads are very powerful - if you define just two functions (`>>=` and `pure`), then you suddenly get a large suite of additional tools/functions you
-can use to manipulate, slice/dice, and combine monads (i.e. `<$>`, `<*>`, `mapM`, `filterM`, etc.).
+Monads are very powerful - if you define just two functions (`>>=` and `pure`), then you suddenly get a large suite of additional tools/functions to manipulate, slice/dice, and combine monads (i.e. `<$>`, `<*>`, `mapM`, `filterM`, etc.).
 
 However, one must note that, the same monadic operation can carry a different meaning, depending on which specific monad instance you are operating on.
 
 For example, `<*>` has a very different meaning for `Maybe` vs. `State`.
 
-Thus, to get real practical value from monads, it's helpful to learn about _specific instances_ of monads, and what each of the monadic operations means
-for that particular monad.
+Thus, to get real practical value from monads, it's helpful to learn about _specific instances_ of monads, and what each of the monadic operations means for that particular monad.
 
 Now, let's look at some other potential benefits of monads:
 
@@ -68,12 +65,10 @@ Now, let's look at some other potential benefits of monads:
 Self-explanatory. An obvious example is the `IO` monad. We can write pure code to operate on the results of an `IO` action.
 
 ### Abstract away tedious bookkeeping
-Fundamentally, monads (and functors/applicative functors) are **abstractions**. As such, they allow us to abstract away tedious bookkeeping that we
-normally have to do.
+Fundamentally, monads (and functors/applicative functors) are **abstractions**. As such, they allow us to abstract away tedious bookkeeping that we normally have to do.
 
 The idea is that we write all of the tedious bookkeeping exactly ONCE, inside of the instance declarations for `Monad`/`Applicative`/`Functor`.
-Once we've done that, we no longer have to think about bookkeeping in normal everyday code - instead, we can just use the simpler built-in functions like
-`<$>`, `<*>`, `>>=`, `pure`, etc, and we can be confident that the bookkeeping will be taken care of for us.
+Once we've done that, we no longer have to think about bookkeeping in normal everyday code - instead, we can just use the simpler built-in functions like `<$>`, `<*>`, `>>=`, `pure`, etc, and we can be confident that the bookkeeping will be taken care of for us.
 
 Examples where this is useful: `Maybe`, `State`, `Parser`, etc.
 
@@ -117,8 +112,7 @@ mf <*> ma =
 f <$> m = m >>= pure . f
 ```
 
-This can be useful in that, the bookkeeping details can be encapsulated in only two functions: `>>=` and `pure`. All other `Applicative` and `Functor`
-operations will then be auto-derived.
+This can be useful in that, the bookkeeping details can be encapsulated in only two functions: `>>=` and `pure`. All other `Applicative` and `Functor` operations will then be auto-derived.
 
 ## Deriving `Functor` from `Applicative`
 We can also define `Functor` completely in terms of `pure` and `<*>`:
