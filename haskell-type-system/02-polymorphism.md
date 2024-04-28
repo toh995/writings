@@ -1,3 +1,6 @@
+---
+date: 2023-11-25
+---
 # Polymorphism
 Sources:
 - http://web.cecs.pdx.edu/~mpj/pubs/springschool.html
@@ -13,6 +16,49 @@ However, according to [wikipedia](https://en.wikipedia.org/wiki/Polymorphism_(co
 - Parametric polymorphism
 - Ad-hoc polymorphism
 
+## Variables
+To achieve polymorphism properly in Haskell, we use **variables**.
+
+A **variable** is a symbol that can take on multiple possible values.
+
+Variables are constrasted with **literals**, which represent exactly one value.
+
+Let's look at some examples - we can consider both **function** variables and literals, and **type constructor** variables and literals.
+
+### Functions
+Consider the example:
+
+```haskell
+fib :: Int -> Int
+fib 0 = 0
+fib 1 = 1
+fib n = fib (n-1) + fib (n-2)
+```
+
+Here, we define a new function literal `fib` $\in (Int \rightarrow Int)$.
+
+Also, the symbols `0`, `1` $\in Int$, are function literals.
+
+The symbol `n` is a function variable. `n` can take on any function belonging to the set $Int \setminus \lbrace 0, 1 \rbrace$
+
+### Type Constructors
+Consider the following example:
+```haskell
+length :: Foldable t => t a -> Int 
+```
+
+Here we have one type constructor literal, `Int` $\in (*)$.
+
+The other symbols, `t` and `a`, are type constructor variables.
+
+`t` can take on any type constructor in the set $Foldable \subset (* \rightarrow *)$.
+
+`a` can take on any type constructor in the set $(*)$.
+
+In Haskell, type constructor **literals** MUST start with an uppercase letter, while type constructor **variables** MUST start with a lowercase letter.
+
+Idiomatically, type constructor variables are single lowercase letters.
+
 ## Parametric Polymorphism
 Parametric polymorphism refers to the usage of _unconstrained_ type constructor variables.
 
@@ -21,7 +67,7 @@ For example:
 id :: a -> a
 ```
 
-In this case, `a` can refer to any arbitrary type, without restriction.
+In this case, `a` can refer to any arbitrary type, without restriction. i.e. $a \in (*)$.
 
 Note that, if the same type constructor variable appears multiple times, then it must take the same type everywhere it appears.
 
@@ -61,8 +107,7 @@ class Functor f where
   fmap :: (a -> b) -> f a -> f b
 ```
 
-Mathematically speaking, we are defining a new set of type constructors, and we'll call this set `Functor`. In other words, this `class` declaration is
-roughly equivalent to:
+Mathematically speaking, we are defining a new set of type constructors, and we'll call this set `Functor`. In other words, this `class` declaration is roughly equivalent to:
 
 $$
 Functor := \lbrace f \mid f \in (* \rightarrow *) \text{ and } P(f) \rbrace
@@ -74,7 +119,7 @@ $$
 
 We can infer the kind `* -> *`, by looking at the type signature for `fmap`.
 
-We can also clearly see that $Functor \subset (* -> *)$
+We can also clearly see that $Functor \subset (* \rightarrow *)$
 
 Also, note that `fmap` is a function which can be overloaded.
 
@@ -119,72 +164,47 @@ Thus, `Either a` is an appropriate candidate to define an `fmap` function for, a
 Note here, that we've acheived function overloading for `fmap` - the function has different implementations for `Maybe` and `Either a`.
 
 ### Type Constructor Constraints
-As noted above, one of the principal benefits of ad-hoc polymorphism is that, it allows us to define constraints on type constructors.
+As noted above, one of the principal benefits of ad-hoc polymorphism is that, it allows us to define **constraints** on type constructor variables.
+
+Let's look at some examples.
 
 #### Example: Function type signatures
-Here's an example type signature with NO constraints:
-
+Consider:
 ```haskell
-sum :: t a -> a
-```
-Here, we have two type constructors: `a` and `t`.
-
-Observe that `a` has kind `*`, and `t` has kind `* -> *`.
-
-In the absence of any constraints, we expect the `sum` function to be valid for any type constructors `a` and `t`, such that
-
-$$
-a \in (*)
-$$
-
-$$
-t \in (* \rightarrow *)
-$$
-
-Now, consider this type signature which has constraints:
-```haskell
-sum :: (Num a, Foldable t) => t a -> a
+foo :: f a -> a -> String
 ```
 
-Now, the `sum` function will only be valid for the type constructors `a` and `t`, such that
+Here, `foo` works $\forall f \in (* \rightarrow *)$, and $\forall a \in (*)$.
 
-$$
-a \in Num \subset (*)
-$$
-
-$$
-t \in Foldable \subset (* \rightarrow *)
-$$
-
-Another example:
+However, suppose we add some type constraints:
 ```haskell
-foo :: (Num a, Show a, Show b) => a -> a -> b -> String
+foo :: (Functor f, Num a, Show a) => f a -> a -> String
 ```
 
-Here, `foo` is valid for all type constructors `a` and `b`, such that
+Now, we've restricted the possible values for `f` and `a`.
 
+Now, `foo` works 
 $$
-a \in Num \subset (*)
+\forall f \in Functor \subset (* \rightarrow *)
 $$
-
 $$
-a \in Show \subset (*)
+\forall a \in Num \cap Show \subset (* \rightarrow *)
 $$
-
-$$
-b \in Show \subset (*)
-$$
-
 
 #### Example: Instance declarations
+Consider:
 ```haskell
-instance (Eq a) => Eq [a] where
-  []     == []     = True
-  (x:xs) == (y:ys) = x == y && xs == ys
-  _      == _    = False
+instance Foo [a] where
 ```
 
-This is basically saying, $\forall a \in (*), \text{ if } a \in Eq, \text{ then } [a] \in Eq$.
+This means that, $\forall a \in (*)$, $[a] \in Foo$.
+
+However, adding type constraints:
+```haskell
+instance (Eq a) => Foo [a] where
+```
+
+This means that, $\forall a \in Eq \subset (*)$, $[a] \in Foo$
 
 #### Example: Class declarations
 Consider this class declaration, which lacks constraints:
@@ -222,3 +242,24 @@ where \space P(f) = f \text{ has some function definition for both } pure \text{
 $$
 
 In other words, $Applicative \subset Functor \subset (* \rightarrow *)$
+
+This type constraint allows us to define "class subsets".
+
+## Comparison With OOP
+In OOP, parametric polymorphism (i.e. unconstrained type constructor variables) can be achieved like:
+```typescript
+type MyObj<T, U> = {
+  prop1: T,
+  prop2: U,
+}
+```
+
+where `T` and `U` are the variables.
+
+Ad-hoc polymorphism can be achieved by adding additional constraints on the type variables, i.e.
+```typescript
+type MyObj<T extends Foo, U extends Bar> = {
+  prop1: T,
+  prop2: U,
+}
+```

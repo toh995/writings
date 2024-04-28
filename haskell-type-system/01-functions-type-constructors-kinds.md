@@ -1,9 +1,13 @@
+---
+date: 2023-11-25
+---
 # Functions, Type Constructors, and Kinds
 
 Sources:
 - http://web.cecs.pdx.edu/~mpj/pubs/springschool.html
 - https://en.wikipedia.org/wiki/Type_constructor
 - https://en.wikipedia.org/wiki/Kind_(type_theory)
+- https://en.wikibooks.org/wiki/Haskell/Type_declarations
 
 ## Functions
 In Haskell, every value is a **function**. Even primitive values like:
@@ -83,12 +87,55 @@ Example type constructors:
   - `Integer -> Bool` represents the set of all functions from `Integer` to `Bool`
 
 ### Defining Custom Type Constructors
-In Haskell we can define new type constructors like so:
+In Haskell, we have three keywords to define new type constructors:
+- `data`
+- `type`
+- `newtype`
+
+#### `data`
 ```haskell
 data Foo a b = Bar a b
 ```
 
 In this example, we have defined a new type constructor `Foo`, which takes a two arguments.
+
+#### `type`
+```haskell
+type Name = String
+```
+
+Here, the `Name` type constructor is an **alias** for `String`.
+
+Another example:
+```haskell
+type Read r = (->) r
+```
+
+In this case, `Read r` has kind `* -> *`.
+
+#### `newtype`
+```haskell
+newtype Name = Name String
+newtype State s a = State { runState :: s -> (s, a) }
+```
+
+The `newtype` keyword works the same as `data`, except `newtype` requires *exactly one constructor with exactly one field inside it*.
+
+Intuitively, the `newtype` keyword creates a wrapper around an existing type.
+
+For example, the `State` type is a wrapper around `s -> (s, a)`. We have two functions to convert between `State` and `s -> (s, a)`:
+```haskell
+State :: (s -> (s, a)) -> State s a
+runState :: State s a -> (s -> (s, a))
+```
+
+This "wrapper" behaves as follows:
+- At **compile-time**, the wrapper is distinct from the underlying type
+- At **run-time**, the wrapper is treated as the same as the underlying type
+
+We can think of `newtype` as a "zero-cost abstraction". i.e. it carries no additional run-time overhead on wrapping/unwrapping values. However, the `data` keyword does carry this additional overhead.
+
+More info: https://stackoverflow.com/a/12064372
 
 ### Comparison to Other Languages
 In other languages such as Java or TypeScript, we can define new **type constructors** by using generic/parametrized types.

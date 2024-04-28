@@ -40,7 +40,7 @@ Concrete examples: `State`, `Parser`, `(-> r)`, `IO`
 
 - In this paradigm, the monad represents a set of instructions to execute later.
 - The definition of monad does NOT necessitate a mechanism to EXECUTE the instruction-set. This is usually defined OUTSIDE of the monad (e.g. for `State`, we have `runState`, which is a custom function unique to `State`).
-- Monad manipulation, then, becomes a way to combine existing instruction-set(s) to create new ones
+- Monad manipulation, then, becomes a way to combine existing instruction-set(s) to create new ones.
 - As a corollary: just because you operate on a monad, does NOT necessarily mean that the instruction-set has been executed. Again, there is a separate mechanism to EXECUTE the instruction-set.
 
 In this paradigm:
@@ -48,6 +48,9 @@ In this paradigm:
 - (Applicative) `pure` create a new instruction-set, which, when executed, will return the provided value
 - (Applicative) `<*>` combine two instruction-sets into a new one. The new instruction-set will execute the first instruction-set, then execute the second one.  The final result of the new instruction-set, will be the ouptut of the first instruction-set (which is a function), applied to the output of the second instruction-set.
 - (Monad) `>>=` create a new instruction-set, which will execute the first instruction-set, then thread its results to the provided function, which will produce a second instruction-set. After this, execute this second instruction-set. The output of this second instruction-set is the final output.
+
+### Exercise
+Think about how the Functor laws apply to the various monad intuitions.
 
 ## Why are monads useful?
 
